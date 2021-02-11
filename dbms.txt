@@ -1,0 +1,250 @@
+create database company;
+use company;
+CREATE TABLE employee (
+    fname VARCHAR(15),
+    minit CHAR,
+    lname VARCHAR(15),
+    ssn INT PRIMARY KEY,
+    bdate DATE,
+    address VARCHAR(30),
+    sex CHAR,
+    salary FLOAT,
+    super_ssn INT,
+    dno INT
+);
+desc employee;
+insert into employee values("John",'B',"Smith",123456789,"1965-01-09","731 Fordren,Houston,TX",'M',30000,333445555,5);
+insert into employee values("Franklin",'T',"wong",333445555,"1955-12-09","638 voss,Houston,TX",'M',40000,888665555,5);
+insert into employee values("Alica",'J',"zelaya",999887777,"1968-01-19","3321 castle,spring TX",'F',25000,987654321,4);
+insert into employee values("Jennifer",'S',"wallace",987654321,"1941-06-20","291 Berry,Bellaire,TX",'F',43000,888665555,4);
+insert into employee values("Ramesh",'K',"Narayan",666884444,"1962-09-15","975 Fire Oak,Humble,TX",'M',38000,333445555,5);
+insert into employee values("Joyce",'A',"English",453453453,"1972-07-31","5631 Rice,Houston TX",'F',25000,333445555,5);
+insert into employee values("Ahmed",'V',"Jabbar",987987987,"1969-03-29","980 dallas,Houston,TX",'M',25000,987654321,4);
+insert into employee values("James",'E',"Bong",888665555,"1937-11-10","450 Stone,Houston,TX",'M',55000,null,1);
+update employee set address="5631 Rice,Houston,TX" where fname="Joyce";
+select * from employee;
+CREATE TABLE department (
+    dname VARCHAR(20),
+    dnumber INT PRIMARY KEY,
+    mgr_ssn INT REFERENCES employee (ssn),
+    mgr_start_date DATE
+);
+drop table department;
+desc department;
+insert into department values("Reasearch",5,333445555,"1988-05-22");
+insert into department values("Adminstration",4,987654321,"1995-01-01");
+insert into department values("Headquarters",1,888665555,"1981-06-19");
+select * from department;
+alter table employee add foreign key(dno) references department(dnumber);
+desc employee;
+CREATE TABLE dept_locations (
+    dnumber INT REFERENCES department (dnumber),
+    dlocation VARCHAR(15),
+    PRIMARY KEY (dnumber , dlocation)
+);
+desc dept_locations;
+insert into dept_locations values(1,"Houston");
+insert into dept_locations values(4,"Stafford");
+insert into dept_locations values(5,"Bellaire");
+insert into dept_locations values(5,"Sugarland");
+insert into dept_locations value(5,"Houston");
+select * from dept_locations;
+CREATE TABLE project (
+    pname VARCHAR(20),
+    pnumber INT PRIMARY KEY,
+    ploction VARCHAR(15),
+    dnum INT REFERENCES department (dnumber)
+);
+desc project;
+insert into project values("ProductX",1,"Bellaire",5);
+insert into project values("ProductY",2,"Sugarland",5);
+insert into project values("ProductZ",3,"Houston",5);
+insert into project values("Computerization",10,"Stafford",4);
+insert into project values("Reorganization",20,"Houston",1);
+insert into project values("Newbenifits",30,"Stafford",4);
+select * from project;
+CREATE TABLE works_on (
+    essn INT REFERENCES employee (ssn),
+    pno INT REFERENCES project (pnumber),
+    hours FLOAT,
+    PRIMARY KEY (essn , pno)
+);
+desc works_on;
+insert into works_on values(123456789,1,32.5);
+insert into works_on values(123456789,2,7.5);
+insert into works_on values(666884444,3,40.0);
+insert into works_on values(453453453,1,20.0);
+insert into works_on values(453453453,2,20.0);
+insert into works_on values(333445555,2,10.0);
+insert into works_on values(333445555,3,10.0);
+insert into works_on values(333445555,10,10.0);
+insert into works_on values(333445555,20,10.0);
+insert into works_on values(999887777,30,30.0);
+insert into works_on values(999887777,10,10.0);
+insert into works_on values(987987987,10,35.0);
+insert into works_on values(987987987,30,5.0);
+insert into works_on values(987654321,30,20.0);
+insert into works_on values(987654321,20,15.0);
+insert into works_on values(888665555,20,null);
+select * from works_on;
+CREATE TABLE dependent (
+    essn INT REFERENCES employee (ssn),
+    dependent_name VARCHAR(10),
+    sex CHAR,
+    bdate DATE,
+    relationship VARCHAR(10),
+    PRIMARY KEY (essn , dependent_name)
+);
+desc dependent;
+insert into dependent values(333445555,"Alice",'F',"1986-04-05","daughter");
+insert into dependent values(333445555,"Theodore",'M',"1983-10-25","son");
+insert into dependent values(333445555,"Joy",'F',"1958-05-03","spouse");
+insert into dependent values(987654321,"Abner",'M',"1942-02-28","spouse");
+insert into dependent values(123456789,"michael",'M',"1988-01-04","son");
+insert into dependent values(123456789,"Alice",'F',"1988-12-30","daughter");
+insert into dependent values(123456789,"Elizabeth",'F',"1967-05-05","spouse");
+select * from dependent;
+show tables;
+
+desc employee;
+desc department;
+desc project;
+desc dept_locations;
+desc works_on;
+desc dependent;
+
+select * from employee;
+select * from department;
+select * from dept_locations;
+select * from project;
+select * from works_on;
+select * from dependent;
+
+Queries;
+1.Retrieve the birthdate and address of the employee whose name is 'John B. Smith';
+
+select bdate,address from employee where concat(fname,' ',minit,'. ',lname)='John B. Smith';
+
+2.List the employees working in department 1;
+
+select concat(fname,' ',minit,'. ',lname) emp_name from employee where dno=1;
+
+3.Retrieve distinct salary values from employee table;
+
+select distinct salary from employee;
+
+4.Retrieve all employees whose address is in ‘Houston,Texas’;
+
+select concat(fname,' ',minit,'. ',lname) emp_name from employee where address like '%Houston,TX';
+
+5.Find all employees who were born during 1950s;
+
+select concat(fname,' ',minit,'. ',lname) emp_name from employee where bdate like '195%';
+
+6.Add a column phone_no to dept_location table.;
+
+alter table dept_locations add phone_no varchar(10);
+desc dept_locations;
+
+7.Add ‘super_ssn’ as a foreign key for employee table.;
+
+alter table employee add foreign key(super_ssn) references employee(ssn);
+desc employee;
+
+8.Modify the size of address column in employee table to 30.;
+
+alter table employee modify address varchar(30);
+desc employee;
+
+9.Change the salary of ‘franklin wong’ to 35000;
+
+update employee set salary=35000 where concat(fname,' ',lname)='Franklin Wong';
+select * from employee where concat(fname,' ',lname)='Franklin Wong';
+
+10.Change the location and controlling department number of project no 10 to ‘Bellaire’ and 5.;
+
+update project set ploction='Bellaire',dnum=5 where pnumber=10;
+select * from project where pnumber=10;
+desc project;
+
+11.Update the salary of all   employees in department no 4 by 10%;
+
+update employee set salary=salary+(salary*(10/100)) where dno=4;
+select * from employee where dno=4;
+
+12.List the employees between the salary range 30000 to 40000;
+
+select concat(fname,' ',minit,'. ',lname) emp_name from employee where salary between 30000 and 40000;
+
+13.List the names and salaries of employees earning a salary of 35000 or more.;
+
+select concat(fname,' ',minit,'. ',lname) emp_name,salary from employee where salary>=35000;
+
+14.List the employees who are staying in ‘Houston’ and earning a salary greater than 30000;
+
+select concat(fname,' ',minit,'. ',lname) emp_name from employee where salary>30000 and address like '%Houston%';
+
+15.Retrieve the Female employees who belongs to either department 4 or 1;
+
+select concat(fname,' ',minit,'. ',lname) fem_emp_name from employee where sex='F' and (dno=4 or dno =1);
+
+16.Retrieve the projects controlled by  department 1 ;
+
+select pname from project where dnum=1;
+
+17.Delete the employee with name ‘joyce’;
+
+delete from employee where fname='Joyce';
+select * from employee;
+
+18.Retrieve all the Male employees from employee.;
+
+select concat(fname,' ',minit,'. ',lname) male_emp_name from employee where sex='M';
+
+19.List the departments with ‘e’ as the second letter in their name.;
+
+select dname from department where dname like '_e%';
+
+20.Retrieve the name and address of all employees who work for the 'Research' department.;
+
+select concat(fname,' ',minit,'. ',lname) emp_name,address,dname from employee,department
+where employee.dno=department.dnumber and dname='Reasearch';
+                       
+                       
+21.For every project located in 'Stafford', list the project number, the controlling department number and name. ;
+
+select pnumber,dnumber,dname from project,department where project.dnum=department.dnumber
+                                         and ploction='Stafford';
+
+22.For every project located in 'Houston', list the project number, the controlling department number,
+               and the department managers last name, address, and birthdate.;
+
+select pnumber,dnumber,lname,address,bdate,mgr_ssn from department,employee,project where department.dnumber=project.dnum
+                                         and employee.ssn=department.mgr_ssn and ploction='Houston';
+select * from department;
+
+23.Retrieve the names of the managers for each department ;
+
+select concat(fname,' ',minit,'. ',lname) mgr_name,dname from employee,department
+                 where employee.ssn=department.mgr_ssn;
+24.Show the resulting salaries if every employee working on the ‘ProductX’ project is given a 10 percent raise;
+
+update employee,works_on,project set salary=salary+(salary*10/100) where project.pnumber=works_on.pno
+                and works_on.essn=employee.ssn and pname='ProductX' ;
+select pname,salary from employee,works_on,project where project.pnumber=works_on.pno
+                and works_on.essn=employee.ssn and pname='ProductX' ;
+select * from project where pname='ProductX';
+select * from works_on where pno=1;
+select * from employee where ssn=453453453;
+               
+25.For each employee, retrieve the employees name, and the name of his or her immediate supervisor.;
+
+select e.fname,ssn,super_ssn,s.fname as supervisor_name
+              from employee e join employee s on e.employee.super_ssn=s.employee.ssn ;
+
+select fname from employee
+26.Retrieve a list of employees and the projects  they are working on,order by department ;
+
+select concat(fname,' ',minit,'. ',lname) emp_name,ssn,pnumber,pname,dnum from employee,project,works_on
+              where works_on.essn=employee.ssn and works_on.pno=project.pnumber order by dnum;
+select * from project;
